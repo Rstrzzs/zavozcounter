@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Счетчик завозов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .counter-container {
+            margin: 40px 0;
+        }
+        
+        .counter-label {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .counter {
+            font-size: 72px;
+            font-weight: 700;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to right, #f56565, #ed64a6);
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 14px;
+        }
+        
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.6);
+        }
+        
+        .info {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+            font-style: italic;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .counter {
+                font-size: 60px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Счетчик завозов материалов</h1>
+        
+        <div class="counter-container">
+            <div class="counter-label">Текущее количество завозов:</div>
+            <div class="counter" id="counter">0</div>
+        </div>
+        
+        <button class="btn" id="addBtn">Прибавить завоз</button>
+        <button class="btn reset-btn" id="resetBtn">Сбросить счетчик</button>
+        
+        <div class="info">
+            Счетчик сохраняется в вашем браузере. При повторном посещении сайта значение будет восстановлено.
+        </div>
+    </div>
+
+    <script>
+        // Получаем элементы DOM
+        const counterElement = document.getElementById('counter');
+        const addBtn = document.getElementById('addBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Ключ для сохранения в localStorage
+        const STORAGE_KEY = 'deliveryCounter';
+        
+        // Функция для получения текущего значения счетчика
+        function getCurrentCount() {
+            const savedCount = localStorage.getItem(STORAGE_KEY);
+            // Если значение есть в localStorage, возвращаем его, иначе возвращаем 0
+            return savedCount ? parseInt(savedCount) : 0;
+        }
+        
+        // Функция для сохранения значения счетчика
+        function saveCount(count) {
+            localStorage.setItem(STORAGE_KEY, count.toString());
+        }
+        
+        // Функция для обновления отображения счетчика
+        function updateCounterDisplay() {
+            const count = getCurrentCount();
+            counterElement.textContent = count;
+        }
+        
+        // Функция для увеличения счетчика
+        function incrementCounter() {
+            const currentCount = getCurrentCount();
+            const newCount = currentCount + 1;
+            saveCount(newCount);
+            updateCounterDisplay();
+            
+            // Анимация при клике
+            counterElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                counterElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        // Функция для сброса счетчика
+        function resetCounter() {
+            if (confirm('Вы уверены, что хотите сбросить счетчик завозов?')) {
+                saveCount(0);
+                updateCounterDisplay();
+            }
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCounterDisplay();
+            
+            // Добавляем обработчики событий
+            addBtn.addEventListener('click', incrementCounter);
+            resetBtn.addEventListener('click', resetCounter);
+            
+            // Добавляем поддержку нажатия клавиши "Пробел" для увеличения счетчика
+            document.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') {
+                    event.preventDefault();
+                    incrementCounter();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
